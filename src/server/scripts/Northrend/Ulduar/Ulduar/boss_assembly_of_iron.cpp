@@ -25,7 +25,7 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 #include "Spell.h"
-#include "TemporarySummon.h"
+#include "TempSummon.h"
 #include "ulduar.h"
 
 enum Spells
