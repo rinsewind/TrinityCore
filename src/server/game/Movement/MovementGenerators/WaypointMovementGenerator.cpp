@@ -59,8 +59,8 @@ void WaypointMovementGenerator<Creature>::DoInitialize(Creature* creature)
     _nextMoveTime.Reset(1000);
 
     // inform AI
-    if (creature->IsAIEnabled)
-        creature->AI()->WaypointPathStarted(_path->Id);
+    if (CreatureAI* AI = creature->AI())
+        AI->WaypointPathStarted(_path->Id);
 }
 
 void WaypointMovementGenerator<Creature>::DoFinalize(Creature* creature)
@@ -102,10 +102,10 @@ void WaypointMovementGenerator<Creature>::OnArrived(Creature* creature)
     }
 
     // inform AI
-    if (creature->IsAIEnabled)
+    if (CreatureAI* AI = creature->AI())
     {
-        creature->AI()->MovementInform(WAYPOINT_MOTION_TYPE, _currentNode);
-        creature->AI()->WaypointReached(waypoint.Id, _path->Id);
+        AI->MovementInform(WAYPOINT_MOTION_TYPE, _currentNode);
+        AI->WaypointReached(waypoint.Id, _path->Id);
     }
 
     creature->UpdateCurrentWaypointInfo(waypoint.Id, _path->Id);
@@ -159,16 +159,16 @@ void WaypointMovementGenerator<Creature>::StartMove(Creature* creature, bool rel
             creature->UpdateCurrentWaypointInfo(0, 0);
 
             // inform AI
-            if (creature->IsAIEnabled)
-                creature->AI()->WaypointPathEnded(waypoint.Id, _path->Id);
+            if (CreatureAI* AI = creature->AI())
+                AI->WaypointPathEnded(waypoint.Id, _path->Id);
             return;
         }
 
         _currentNode = (_currentNode + 1) % _path->Nodes.size();
 
         // inform AI
-        if (creature->IsAIEnabled)
-            creature->AI()->WaypointStarted(waypoint.Id, _path->Id);
+        if (CreatureAI* AI = creature->AI())
+            AI->WaypointStarted(waypoint.Id, _path->Id);
     }
 
     ASSERT(_currentNode < _path->Nodes.size(), "WaypointMovementGenerator::StartMove: tried to reference a node id (%u) which is not included in path (%u)", _currentNode, _path->Id);
@@ -230,7 +230,7 @@ bool WaypointMovementGenerator<Creature>::DoUpdate(Creature* creature, uint32 di
     if (_done || !_path || _path->Nodes.empty())
         return true;
 
-    if (_stalled || creature->HasUnitState(UNIT_STATE_NOT_MOVE) || creature->IsMovementPreventedByCasting())
+    if (_stalled || creature->HasUnitState(UNIT_STATE_NOT_MOVE | UNIT_STATE_LOST_CONTROL) || creature->IsMovementPreventedByCasting())
     {
         creature->StopMoving();
         return true;

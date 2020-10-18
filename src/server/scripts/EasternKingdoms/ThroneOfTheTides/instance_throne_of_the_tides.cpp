@@ -405,7 +405,7 @@ class instance_throne_of_the_tides : public InstanceMapScript
                                         trigger->CastSpell(trigger, SPELL_SHOCK_DEFENSE, true);
 
                                 if (Creature* ozumatVehicle = GetCreature(DATA_OZUMAT_VEHICLE_BIG))
-                                    if (ozumatVehicle->IsAIEnabled)
+                                    if (ozumatVehicle->IsAIEnabled())
                                         ozumatVehicle->AI()->DoAction(ACTION_DEFENSE_SYSTEM_ACTIVATED);
 
                                 if (GameObject* door1 = GetGameObject(DATA_INVISIBLE_DOOR_1))

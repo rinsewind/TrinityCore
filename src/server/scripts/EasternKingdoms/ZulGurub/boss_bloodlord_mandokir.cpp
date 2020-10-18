@@ -619,7 +619,7 @@ class spell_mandokir_ohgan_orders_trigger : public SpellScript
         caster->ClearUnitState(UNIT_STATE_CASTING);
 
         if (Creature* creature = caster->ToCreature())
-            if (creature->IsAIEnabled)
+            if (creature->IsAIEnabled())
                 creature->AI()->AttackStart(GetHitUnit());
     }
 

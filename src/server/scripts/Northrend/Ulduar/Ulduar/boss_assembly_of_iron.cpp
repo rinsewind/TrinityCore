@@ -730,7 +730,7 @@ struct npc_assembly_lightning_elemental : public ScriptedAI
     {
         if (InstanceScript* instance = me->GetInstanceScript())
             if (Creature* molgeim = instance->GetCreature(DATA_RUNEMASTER_MOLGEIM))
-                if (molgeim->IsAIEnabled)
+                if (molgeim->IsAIEnabled())
                     molgeim->AI()->JustSummoned(me);
     }
 
@@ -767,7 +767,7 @@ class spell_assembly_meltdown : public SpellScript
     {
         if (InstanceScript* instance = GetCaster()->GetInstanceScript())
             if (Creature* steelbreaker = instance->GetCreature(DATA_STEELBREAKER))
-                if (steelbreaker->IsAIEnabled)
+                if (steelbreaker->IsAIEnabled())
                     steelbreaker->AI()->DoAction(ACTION_ADD_CHARGE);
     }
 
@@ -830,7 +830,7 @@ class spell_assembly_supercharge : public SpellScript
     void HandleScriptEffect(SpellEffIndex /*effIndex*/)
     {
         if (Creature* target = GetHitCreature())
-            if (target->IsAIEnabled)
+            if (target->IsAIEnabled())
                 target->AI()->DoAction(ACTION_SUPERCHARGE);
     }
 
@@ -845,7 +845,7 @@ class spell_assembly_berserk : public AuraScript
     void HandlePeriodic(AuraEffect const* /*aurEff*/)
     {
         if (Creature* target = GetTarget()->ToCreature())
-            if (target->IsAIEnabled)
+            if (target->IsAIEnabled())
                 target->AI()->DoAction(ACTION_BERSERK_TRIGGERED);
     }
 
