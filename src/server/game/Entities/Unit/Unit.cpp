@@ -9747,10 +9747,8 @@ int32 Unit::GetCreatePowers(Powers power) const
         case POWER_RAGE:
             return 1000;
         case POWER_FOCUS:
-            if (GetTypeId() == TYPEID_PLAYER && getClass() == CLASS_HUNTER)
-                return 100;
-            return (GetTypeId() == TYPEID_PLAYER || !((Creature const*)this)->IsPet() || ((Pet const*)this)->getPetType() != HUNTER_PET ? 0 : 100);
         case POWER_ENERGY:
+        case POWER_ECLIPSE:
             return 100;
         case POWER_RUNIC_POWER:
             return 1000;
@@ -9758,8 +9756,6 @@ int32 Unit::GetCreatePowers(Powers power) const
             return 0;
         case POWER_SOUL_SHARDS:
             return 3;
-        case POWER_ECLIPSE:
-            return 100;
         case POWER_HOLY_POWER:
             return 3;
         case POWER_HEALTH:
@@ -11204,7 +11200,7 @@ bool Unit::InitTamedPet(Pet* pet, uint8 level, uint32 spell_id)
     if (IsPlayer())
         pet->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
 
-    if (!pet->InitStatsForLevel(level))
+    if (!pet->InitStatsForLevel(level, false))
     {
         TC_LOG_ERROR("entities.unit", "Pet::InitStatsForLevel() failed for creature (Entry: %u)!", pet->GetEntry());
         return false;
@@ -12859,6 +12855,7 @@ uint32 Unit::GetModelForTotem(PlayerTotemType totemType)
             break;
         }
     }
+
     return 0;
 }
 

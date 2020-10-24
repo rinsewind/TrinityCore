@@ -597,8 +597,8 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
     if (updateLevel)
         SelectLevel();
 
-    // Do not update guardian stats here - they are handled in Guardian::InitStatsForLevel()
-    if (!IsGuardian())
+    // Do not update minion stats here - they are handled in Minion::InitStatsForLevel
+    if (!IsMinion())
     {
         uint32 previousHealth = GetHealth();
         UpdateLevelDependantStats();

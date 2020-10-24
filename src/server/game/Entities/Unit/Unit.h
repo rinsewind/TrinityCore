@@ -1410,6 +1410,9 @@ class TC_GAME_API Unit : public WorldObject
         float GetNegStat(Stats stat) const { return GetFloatValue(UNIT_FIELD_NEGSTAT0+stat); }
         float GetCreateStat(Stats stat) const { return m_createStats[stat]; }
 
+        void SetMaxHealthModifier(float val) { SetFloatValue(UNIT_FIELD_MAXHEALTHMODIFIER, val); }
+        float GetMaxHealthModifier() const { GetFloatValue(UNIT_FIELD_MAXHEALTHMODIFIER); }
+
         ObjectGuid GetChannelObjectGuid() const { return GetGuidValue(UNIT_FIELD_CHANNEL_OBJECT); }
         void SetChannelObjectGuid(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_CHANNEL_OBJECT, guid); }
 

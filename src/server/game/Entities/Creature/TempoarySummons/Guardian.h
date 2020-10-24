@@ -28,6 +28,10 @@ class TC_GAME_API Guardian : public Minion
         void InitSummon() override;
         void RemoveFromWorld() override;
 
+        bool InitStatsForLevel(uint8 level, bool referenceOwner) override;
+        void UnsummonActiveGuardian();
+
+        // StatSystem helpers
         bool UpdateStats(Stats stat) override;
         bool UpdateAllStats() override;
         void UpdateResistances(uint32 school) override;
@@ -36,9 +40,6 @@ class TC_GAME_API Guardian : public Minion
         void UpdateMaxPower(Powers power) override;
         void UpdateAttackPowerAndDamage(bool ranged = false) override;
         void UpdateDamagePhysical(WeaponAttackType attType) override;
-
-        bool InitStatsForLevel(uint8 level);
-        void UnsummonActiveGuardian();
 
         int32 GetBonusDamage() const { return m_bonusSpellDamage; }
         void SetBonusDamage(int32 damage);
