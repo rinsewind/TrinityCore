@@ -5888,8 +5888,6 @@ void Unit::SetActiveGuardian(Guardian* guardian, bool apply)
         SetPetSummonSlotGUID(ObjectGuid::Empty);
         SetActiveGuardianGUID(ObjectGuid::Empty);
     }
-
-    UpdatePetCombatState();
 }
 
 Unit* Unit::GetCharmerOrOwner() const
@@ -5929,6 +5927,8 @@ void Unit::SetOwnerOfMinion(Minion* minion, bool apply)
         minion->SetOwnerGUID(ObjectGuid::Empty);
         _ownedMinions.erase(minion);
     }
+
+    UpdatePetCombatState();
 }
 
 void Unit::SetCreatorOfMinion(Minion* minion, bool apply)
@@ -8985,11 +8985,12 @@ void Unit::AtTargetAttacked(Unit* target, bool canInitialAggro)
 
 void Unit::UpdatePetCombatState()
 {
-    ASSERT(!IsPet()); // player pets do not use UNIT_FLAG_PET_IN_COMBAT for this purpose - but player pets should also never have minions of their own to call this
+    if (IsGuardian()) // Guardian pets don't use the pet in combat flag if one of their summoned units is under attack
+        return;
 
-    if (Guardian const* guardian = GetActiveGuardian())
+    for (Minion const* minion : _ownedMinions)
     {
-        if (guardian->IsInCombat())
+        if (minion->IsInCombat())
         {
             SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
             return;

@@ -91,7 +91,7 @@ void Minion::InitSummon()
             if (petStore != sPetFamilySpellsStore.end())
             {
                 for (uint32 spellId : petStore->second)
-                    CastSpell(this, spellId);
+                    CastSpell(nullptr, spellId);
             }
         }
     }
@@ -220,7 +220,14 @@ bool Minion::InitStatsForLevel(uint8 level, bool referenceOwner /*= false*/)
     for (uint8 i = SPELL_SCHOOL_HOLY; i < MAX_SPELL_SCHOOL; ++i)
         SetModifierValue(UnitMods(UNIT_MOD_RESISTANCE_START + i), BASE_VALUE, 0.f);
 
-    printf("initialized stats with health = %u and expansion = %u (referenced from owner = %u) \n", health, expansion, uint8(referenceOwner));
+    // @todo: this should be for ALL creatures, not just minions, pets, whatever
+    if (PetLevelInfo const* pInfo = sObjectMgr->GetPetLevelInfo(GetEntry(), level))
+    {
+        for (uint8 stat = 0; stat < MAX_STATS; ++stat)
+            SetCreateStat(Stats(stat), float(pInfo->stats[stat]));
+
+        UpdateAllStats();
+    }
 
     return true;
 }
