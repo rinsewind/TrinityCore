@@ -543,10 +543,7 @@ bool Creature::InitEntry(uint32 entry, CreatureData const* data /*= nullptr*/)
     SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);
     SetFloatValue(UNIT_MOD_CAST_HASTE, 1.0f);
 
-    SetSpeedRate(MOVE_WALK,   cinfo->speed_walk);
-    SetSpeedRate(MOVE_RUN,    cinfo->speed_run);
-    SetSpeedRate(MOVE_SWIM,   1.0f); // using 1.0 rate
-    SetSpeedRate(MOVE_FLIGHT, 1.0f); // using 1.0 rate
+    InitializeMovementSpeeds();
 
     // Will set UNIT_FIELD_BOUNDINGRADIUS and UNIT_FIELD_COMBATREACH
     SetObjectScale(GetNativeObjectScale());
@@ -2750,6 +2747,26 @@ void Creature::RefreshSwimmingFlag(bool recheck)
     // Creatures must be able to chase a target in water if they can enter water
     if (_isMissingSwimmingFlagOutOfCombat && CanEnterWater())
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SWIMMING);
+}
+
+void Creature::InitializeMovementSpeeds()
+{
+    // This segment needs to be removed once model based speeds are implemented and movementIds fully added.
+    SetSpeedRate(MOVE_WALK,   m_creatureInfo->speed_walk);
+    SetSpeedRate(MOVE_RUN,    m_creatureInfo->speed_run);
+    SetSpeedRate(MOVE_SWIM,   1.0f); // using 1.0 rate
+    SetSpeedRate(MOVE_FLIGHT, 1.0f); // using 1.0 rate
+
+    // Todo: movement speeds by model
+
+    // Next we override movement speeds if a movementId is given
+    if (CreatureMovementInfo const* movementInfo = sObjectMgr->GetCreatureMovementInfo(m_creatureInfo->movementId))
+    {
+        if (movementInfo->WalkSpeed > 0.f)
+            SetSpeed(MOVE_WALK, movementInfo->WalkSpeed);
+        if (movementInfo->RunSpeed > 0.f)
+            SetSpeed(MOVE_RUN, movementInfo->RunSpeed);
+    }
 }
 
 void Creature::AllLootRemovedFromCorpse()
