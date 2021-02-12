@@ -543,6 +543,7 @@ bool Creature::InitEntry(uint32 entry, CreatureData const* data /*= nullptr*/)
     SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);
     SetFloatValue(UNIT_MOD_CAST_HASTE, 1.0f);
 
+    InitializeCreatureMovementInfo(cinfo);
     InitializeMovementSpeeds();
 
     // Will set UNIT_FIELD_BOUNDINGRADIUS and UNIT_FIELD_COMBATREACH
@@ -2749,6 +2750,24 @@ void Creature::RefreshSwimmingFlag(bool recheck)
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SWIMMING);
 }
 
+void Creature::InitializeCreatureMovementInfo(CreatureTemplate const* cInfo)
+{
+    if (CreatureMovementInfoOverride const* movementInfoOverride = sObjectMgr->GetCreatureMovementInfoOverride(cInfo->movementId))
+    {
+        if (movementInfoOverride->RunSpeed > 0.f)
+        {
+            _creatureMovementInfo.RunSpeed = movementInfoOverride->RunSpeed;
+            _creatureMovementInfo.HasRunSpeedOverriden = true;
+        }
+
+        if (movementInfoOverride->WalkSpeed > 0.f)
+        {
+            _creatureMovementInfo.WalkSpeed = movementInfoOverride->WalkSpeed;
+            _creatureMovementInfo.HasWalkSpeedOverriden = true;
+        }
+    }
+}
+
 void Creature::InitializeMovementSpeeds()
 {
     // This segment needs to be removed once model based speeds are implemented and movementIds fully added.
@@ -2759,14 +2778,12 @@ void Creature::InitializeMovementSpeeds()
 
     // Todo: movement speeds by model
 
-    // Next we override movement speeds if a movementId is given
-    if (CreatureMovementInfo const* movementInfo = sObjectMgr->GetCreatureMovementInfo(m_creatureInfo->movementId))
-    {
-        if (movementInfo->WalkSpeed > 0.f)
-            SetSpeed(MOVE_WALK, movementInfo->WalkSpeed);
-        if (movementInfo->RunSpeed > 0.f)
-            SetSpeed(MOVE_RUN, movementInfo->RunSpeed);
-    }
+    // Overridden movement speed values by movementId data
+    if (_creatureMovementInfo.HasRunSpeedOverriden)
+        SetSpeed(MOVE_RUN, _creatureMovementInfo.RunSpeed);
+
+    if (_creatureMovementInfo.HasWalkSpeedOverriden)
+        SetSpeed(MOVE_WALK, _creatureMovementInfo.WalkSpeed);
 }
 
 void Creature::AllLootRemovedFromCorpse()

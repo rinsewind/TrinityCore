@@ -1513,12 +1513,12 @@ void ObjectMgr::LoadCreatureMovementInfo()
 {
     uint32 oldMSTime = getMSTime();
 
-    _creatureMovementInfoStore.clear();
+    _creatureMovementInfoOverrideStore.clear();
 
     QueryResult result = WorldDatabase.Query("SELECT MovementID, WalkSpeed, RunSpeed FROM creature_movement_info");
     if (!result)
     {
-        TC_LOG_INFO("server.loading", ">> Loaded 0 creature movement info entries. DB table `creature_movement_info` is empty!");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 creature movement info override entries. DB table `creature_movement_info` is empty!");
         return;
     }
 
@@ -1531,13 +1531,16 @@ void ObjectMgr::LoadCreatureMovementInfo()
         float runSpeed = !fields[2].IsNull() ? fields[2].GetFloat() : 0.f;
 
         if (walkSpeed < 0.f || runSpeed < 0.f)
+        {
             TC_LOG_ERROR("sql.sql", "MovementID %u in `creature_movement_info` contains negative speed values which can never be correct. Skipped loading.", movementId);
+            continue;
+        }
 
-        _creatureMovementInfoStore[movementId] = { walkSpeed, runSpeed };
+        _creatureMovementInfoOverrideStore[movementId] = { walkSpeed, runSpeed };
 
     } while (result->NextRow());
 
-    TC_LOG_INFO("server.loading", ">> Loaded " SZFMTD " creature movement info entries in %u ms", _creatureMovementInfoStore.size(), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded " SZFMTD " creature movement info override entries in %u ms", _creatureMovementInfoOverrideStore.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 CreatureModelInfo const* ObjectMgr::GetCreatureModelInfo(uint32 modelId) const
@@ -3037,9 +3040,9 @@ ItemTemplate const* ObjectMgr::GetItemTemplate(uint32 entry) const
     return nullptr;
 }
 
-CreatureMovementInfo const* ObjectMgr::GetCreatureMovementInfo(uint32 movementId) const
+CreatureMovementInfoOverride const* ObjectMgr::GetCreatureMovementInfoOverride(uint32 movementId) const
 {
-    return Trinity::Containers::MapGetValuePtr(_creatureMovementInfoStore, movementId);
+    return Trinity::Containers::MapGetValuePtr(_creatureMovementInfoOverrideStore, movementId);
 }
 
 void ObjectMgr::LoadVehicleTemplateAccessories()
